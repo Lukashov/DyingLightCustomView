@@ -194,7 +194,7 @@ public class DyingLightProgressBar extends View {
         int dX = 0;
         int dY = 0;
 
-        for (int i = 0; i < (15 * delta / 8) ; i++) {
+        for (int i = 0; i < (4 * delta) ; i++) {
 
             mCoordinatesA = new Coordinates();
             mCoordinatesB = new Coordinates();
@@ -267,10 +267,72 @@ public class DyingLightProgressBar extends View {
                 dY++;
             }
 
-            if(i == 15 * delta / 8){
-                aX = 0; bX = 0; cX = 0; dX = 0;
-                aY = 0; bY = 0; cY = 0; dY = 0;
+            if(i >= 15 * delta / 8 && i < 17 * delta / 8){
+                offsetVertices(aX, aY, bX, bY, cX, cY, dX, dY);
+
+                aX--;
             }
+
+            if(i >= 17 * delta / 8 && i < 19 * delta / 8){
+                offsetVertices(aX, aY, bX, bY, cX, cY, dX, dY);
+
+                aX--; bY--;
+            }
+
+            if(i >= 19 * delta / 8 && i < 21 * delta / 8){
+                offsetVertices(aX, aY, bX, bY, cX, cY, dX, dY);
+
+                bY--; cX--;
+            }
+
+            if(i >= 21 * delta / 8 && i < 23 * delta / 8){
+                offsetVertices(aX, aY, bX, bY, cX, cY, dX, dY);
+
+                cX--; dY--;
+            }
+
+            if(i >= 23 * delta / 8 && i < 25 * delta / 8){
+                offsetVertices(aX, aY, bX, bY, cX, cY, dX, dY);
+
+                dY--; aY--;
+            }
+
+            if(i >= 25 * delta / 8 && i < 13 * delta / 4){
+                offsetVertices(aX, aY, bX, bY, cX, cY, dX, dY);
+
+                aY--;
+            }
+
+            if(i >= 13 * delta / 4 && i < 27 * delta / 8){
+                offsetVertices(aX, aY, bX, bY, cX, cY, dX, dY);
+
+                aY--; bX--;
+            }
+
+            if(i >= 27 * delta / 8 && i < 7 * delta / 2){
+                offsetVertices(aX, aY, bX, bY, cX, cY, dX, dY);
+
+                bX--; cY--;
+            }
+
+            if(i >= 7 * delta / 2 && i < 15 * delta / 4){
+                offsetVertices(aX, aY, bX, bY, cX, cY, dX, dY);
+
+                bX--; cY--; dX--;
+            }
+
+            if(i >= 15 * delta / 4 && i < 31 * delta / 8){
+                offsetVertices(aX, aY, bX, bY, cX, cY, dX, dY);
+
+                cY--; dX--;
+            }
+
+            if(i >= 31 * delta / 8 && i < 4 * delta){
+                offsetVertices(aX, aY, bX, bY, cX, cY, dX, dY);
+
+                dX--;
+            }
+
         }
     }
 
@@ -312,49 +374,54 @@ public class DyingLightProgressBar extends View {
 
                 try {
 
-                    for (int i = 0; i < 4; i++) {
-                        for (int j = 255; j >= 0; j--) {
-                            Thread.sleep(3);
-                            mRectPaint.setAlpha(j);
-                            postInvalidate();
-                        }
-                        for (int k = 0; k < 255; k++) {
-                            Thread.sleep(3);
-                            mRectPaint.setAlpha(k);
-                            postInvalidate();
+                    for (int n = 0; n < 8; n++) {
+
+                        for (int i = 0; i < 4; i++) {
+                            for (int j = 255; j >= 0; j--) {
+                                Thread.sleep(3);
+                                mRectPaint.setAlpha(j);
+                                postInvalidate();
+                            }
+                            for (int k = 0; k < 255; k++) {
+                                Thread.sleep(3);
+                                mRectPaint.setAlpha(k);
+                                postInvalidate();
+                            }
+                            Thread.sleep(15);
                         }
                         Thread.sleep(15);
+                        for (int i = 255; i >= 0; i--) {
+                            Thread.sleep(3);
+                            mRectPaint.setAlpha(i);
+                            postInvalidate();
+                        }
+
+                        for (int i = 0; i < mCoordinatesListPointB.size(); i++) {
+
+                            Thread.sleep(4);
+
+                            moveRectangle(mRightBottomSquare,
+                                    mCoordinatesListPointA.get(i).x,
+                                    mCoordinatesListPointA.get(i).y);
+
+                            moveRectangle(mLeftBottomSquare,
+                                    mCoordinatesListPointB.get(i).x,
+                                    mCoordinatesListPointB.get(i).y);
+
+                            moveRectangle(mLeftTopSquare,
+                                    mCoordinatesListPointC.get(i).x,
+                                    mCoordinatesListPointC.get(i).y);
+
+                            moveRectangle(mRightTopSquare,
+                                    mCoordinatesListPointD.get(i).x,
+                                    mCoordinatesListPointD.get(i).y);
+
+                            postInvalidate();
+
+                        }
+
                     }
-                    Thread.sleep(15);
-                    for (int i = 255; i >= 0; i--) {
-                        Thread.sleep(3);
-                        mRectPaint.setAlpha(i);
-                        postInvalidate();
-                    }
 
-                    for (int i = 0; i < mCoordinatesListPointB.size(); i++) {
-
-                        Thread.sleep(4);
-
-                        moveRectangle(mRightBottomSquare,
-                                mCoordinatesListPointA.get(i).x,
-                                mCoordinatesListPointA.get(i).y);
-
-                        moveRectangle(mLeftBottomSquare,
-                                mCoordinatesListPointB.get(i).x,
-                                mCoordinatesListPointB.get(i).y);
-
-                        moveRectangle(mLeftTopSquare,
-                                mCoordinatesListPointC.get(i).x,
-                                mCoordinatesListPointC.get(i).y);
-
-                        moveRectangle(mRightTopSquare,
-                                mCoordinatesListPointD.get(i).x,
-                                mCoordinatesListPointD.get(i).y);
-
-                        postInvalidate();
-
-                    }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

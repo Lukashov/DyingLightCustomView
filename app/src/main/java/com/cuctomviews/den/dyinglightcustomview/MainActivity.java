@@ -11,6 +11,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         DyingLightProgressBar dyingLightProgressBar = (DyingLightProgressBar) findViewById(R.id.progress);
 
-        dyingLightProgressBar.startAnim();
+            dyingLightProgressBar.startAnim();
     }
 }
