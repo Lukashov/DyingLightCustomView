@@ -1,6 +1,5 @@
 package com.cuctomviews.den.dyinglightcustomview;
 
-import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -8,7 +7,6 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -30,10 +28,7 @@ public class DyingLightProgressBar extends View {
     private List<Coordinates> mCoordinatesListPointC;
     private List<Coordinates> mCoordinatesListPointD;
 
-    private Coordinates mCoordinatesA;
-    private Coordinates mCoordinatesB;
-    private Coordinates mCoordinatesC;
-    private Coordinates mCoordinatesD;
+    private CoordinateUtils mCoordinateUtils;
 
     public DyingLightProgressBar(Context context) {
         super(context);
@@ -58,7 +53,7 @@ public class DyingLightProgressBar extends View {
 
     public void init(){
 
-                mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mRectPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
         mPaint.setColor(0xFF6176EC);
@@ -86,19 +81,56 @@ public class DyingLightProgressBar extends View {
         mCoordinatesListPointB = new ArrayList<>();
         mCoordinatesListPointC = new ArrayList<>();
         mCoordinatesListPointD = new ArrayList<>();
-
     }
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
 
+        mSideSquare = getSideParentSquare();
+
+        setPointsToSquares();
+
+        fillCoordinateLists();
+    }
+
+    private int getSideParentSquare() {
+
+        int side;
+
         if (getWidth() < getHeight()){
-            mSideSquare = getWidth();
+            side = getWidth();
         }else{
-            mSideSquare = getHeight();
+            side = getHeight();
         }
 
+        return side;
+    }
+
+    private void fillCoordinateLists() {
+        mCoordinateUtils = new CoordinateUtils(mLeftTopSquare,
+                mLeftBottomSquare, mRightTopSquare, mRightBottomSquare);
+
+        mCoordinateUtils.fillCoordinateLists(mSideSquare);
+
+        mCoordinatesListPointA = mCoordinateUtils.getCoordinatesListPointA();
+        mCoordinatesListPointB = mCoordinateUtils.getCoordinatesListPointB();
+        mCoordinatesListPointC = mCoordinateUtils.getCoordinatesListPointC();
+        mCoordinatesListPointD = mCoordinateUtils.getCoordinatesListPointD();
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+
+        setPointsToLines();
+
+        drawSquares(canvas);
+
+        drawSixLines(canvas);
+    }
+
+    private void setPointsToSquares() {
         mCentreSquare.set(mSideSquare / 2 - mSideSquare / 4,
                 mSideSquare / 2 - mSideSquare / 4,
                 mSideSquare / 2 + mSideSquare / 4,
@@ -114,17 +146,9 @@ public class DyingLightProgressBar extends View {
                 mSideSquare - mSideSquare / 8,
                 mSideSquare,
                 mSideSquare);
-
-        fillCoordinatesLists();
-
     }
 
-    @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-
-// Draw small squares
-
+    private void setPointsToLines() {
         mLeftSide.setLine(mLeftTopSquare.centerX(),
                 mLeftTopSquare.centerY(),
                 mLeftBottomSquare.centerX(),
@@ -154,206 +178,28 @@ public class DyingLightProgressBar extends View {
                 mRightTopSquare.centerY(),
                 mLeftBottomSquare.centerX(),
                 mLeftBottomSquare.centerY());
+    }
 
+    private void drawSquares(Canvas canvas) {
         canvas.drawRect(mLeftTopSquare, mPaint);
         canvas.drawRect(mLeftBottomSquare, mPaint);
         canvas.drawRect(mRightTopSquare, mPaint);
         canvas.drawRect(mRightBottomSquare, mPaint);
 
-// Draw six lines
+        canvas.drawRect(mCentreSquare, mRectPaint);
+    }
 
+    private void drawSixLines(Canvas canvas) {
         myDrawLine(canvas, mLeftSide, mPaint);
         myDrawLine(canvas, mTopSide, mPaint);
         myDrawLine(canvas, mRightSide, mPaint);
         myDrawLine(canvas, mBottomSide, mPaint);
         myDrawLine(canvas, mFirstDiagonal, mPaint);
         myDrawLine(canvas, mSecondDiagonal, mPaint);
-
-//Draw big square in centre View
-        canvas.drawRect(mCentreSquare, mRectPaint);
-
     }
 
     public void myDrawLine(Canvas canvas, Line _line, Paint paint){
         canvas.drawLine(_line.startX, _line.startY, _line.endX, _line.endY, paint);
-    }
-
-    public void fillCoordinatesLists(){
-
-        int delta = mSideSquare - mSideSquare / 8;
-
-        int aX = 0;
-        int aY = 0;
-
-        int bX = 0;
-        int bY = 0;
-
-        int cX = 0;
-        int cY = 0;
-
-        int dX = 0;
-        int dY = 0;
-
-        for (int i = 0; i < (4 * delta) ; i++) {
-
-            mCoordinatesA = new Coordinates();
-            mCoordinatesB = new Coordinates();
-            mCoordinatesC = new Coordinates();
-            mCoordinatesD = new Coordinates();
-
-            if(i >=0 && i < delta / 4){
-                offsetVertices(aX, aY, bX, bY, cX, cY, dX, dY);
-
-                aY++;
-            }
-
-            if(i >= (delta / 4) && i < (delta / 2)){
-                offsetVertices(aX, aY, bX, bY, cX, cY, dX, dY);
-
-                aY++; bX++;
-            }
-
-            if(i >= (delta / 2) && i < (3 * delta / 4)){
-                offsetVertices(aX, aY, bX, bY, cX, cY, dX, dY);
-
-                bX++; cY++;
-            }
-
-            if(i >= (3 * delta / 4) && i < (7 * delta / 8)){
-                offsetVertices(aX, aY, bX, bY, cX, cY, dX, dY);
-
-                cY++; dX++;
-            }
-
-            if(i >= (7 * delta / 8) && i < delta){
-                offsetVertices(aX, aY, bX, bY, cX, cY, dX, dY);
-
-                aX++; cY++; dX++;
-            }
-
-            if(i >= delta && i < 9 * delta / 8){
-                offsetVertices(aX, aY, bX, bY, cX, cY, dX, dY);
-
-                aX++; bY++; dX++;
-            }
-
-            if(i >= 9 * delta / 8 && i < 5 * delta / 4){
-                offsetVertices(aX, aY, bX, bY, cX, cY, dX, dY);
-
-                aX++; bY++; cX++; dX++;
-            }
-
-            if(i >= 5 * delta / 4 && i < 11 * delta / 8){
-                offsetVertices(aX, aY, bX, bY, cX, cY, dX, dY);
-
-                aX++; bY++; cX++;
-            }
-
-            if(i >= 11 * delta / 8 && i < 3 * delta / 2){
-                offsetVertices(aX, aY, bX, bY, cX, cY, dX, dY);
-
-                bY++; cX++; dY++;
-            }
-
-            if(i >= 3 * delta / 2 && i < 13 * delta / 8){
-                offsetVertices(aX, aY, bX, bY, cX, cY, dX, dY);
-
-                cX++; dY++;
-            }
-
-            if(i >= 13 * delta / 8 && i < 15 * delta / 8){
-                offsetVertices(aX, aY, bX, bY, cX, cY, dX, dY);
-
-                dY++;
-            }
-
-            if(i >= 15 * delta / 8 && i < 17 * delta / 8){
-                offsetVertices(aX, aY, bX, bY, cX, cY, dX, dY);
-
-                aX--;
-            }
-
-            if(i >= 17 * delta / 8 && i < 19 * delta / 8){
-                offsetVertices(aX, aY, bX, bY, cX, cY, dX, dY);
-
-                aX--; bY--;
-            }
-
-            if(i >= 19 * delta / 8 && i < 21 * delta / 8){
-                offsetVertices(aX, aY, bX, bY, cX, cY, dX, dY);
-
-                bY--; cX--;
-            }
-
-            if(i >= 21 * delta / 8 && i < 23 * delta / 8){
-                offsetVertices(aX, aY, bX, bY, cX, cY, dX, dY);
-
-                cX--; dY--;
-            }
-
-            if(i >= 23 * delta / 8 && i < 25 * delta / 8){
-                offsetVertices(aX, aY, bX, bY, cX, cY, dX, dY);
-
-                dY--; aY--;
-            }
-
-            if(i >= 25 * delta / 8 && i < 13 * delta / 4){
-                offsetVertices(aX, aY, bX, bY, cX, cY, dX, dY);
-
-                aY--;
-            }
-
-            if(i >= 13 * delta / 4 && i < 27 * delta / 8){
-                offsetVertices(aX, aY, bX, bY, cX, cY, dX, dY);
-
-                aY--; bX--;
-            }
-
-            if(i >= 27 * delta / 8 && i < 7 * delta / 2){
-                offsetVertices(aX, aY, bX, bY, cX, cY, dX, dY);
-
-                bX--; cY--;
-            }
-
-            if(i >= 7 * delta / 2 && i < 15 * delta / 4){
-                offsetVertices(aX, aY, bX, bY, cX, cY, dX, dY);
-
-                bX--; cY--; dX--;
-            }
-
-            if(i >= 15 * delta / 4 && i < 31 * delta / 8){
-                offsetVertices(aX, aY, bX, bY, cX, cY, dX, dY);
-
-                cY--; dX--;
-            }
-
-            if(i >= 31 * delta / 8 && i < 4 * delta){
-                offsetVertices(aX, aY, bX, bY, cX, cY, dX, dY);
-
-                dX--;
-            }
-
-        }
-    }
-
-    private void offsetVertices(int _aX, int _aY, int _bX, int _bY, int _cX, int _cY, int _dX, int _dY) {
-
-        mCoordinatesA.x = mRightBottomSquare.centerX() - _aX;
-        mCoordinatesA.y = mRightBottomSquare.centerY() - _aY;
-        mCoordinatesListPointA.add(mCoordinatesA);
-
-        mCoordinatesB.x = mLeftBottomSquare.centerX() + _bX;
-        mCoordinatesB.y = mLeftBottomSquare.centerY() - _bY ;
-        mCoordinatesListPointB.add(mCoordinatesB);
-
-        mCoordinatesC.x = mLeftTopSquare.centerX() + _cX;
-        mCoordinatesC.y = mLeftTopSquare.centerY() + _cY;
-        mCoordinatesListPointC.add(mCoordinatesC);
-
-        mCoordinatesD.x = mRightTopSquare.centerX() - _dX;
-        mCoordinatesD.y = mRightTopSquare.centerY() + _dY;
-        mCoordinatesListPointD.add(mCoordinatesD);
-
     }
 
     public void moveRectangle(Rect _rect, int _centerX, int _centerY){
@@ -374,52 +220,50 @@ public class DyingLightProgressBar extends View {
 
                 try {
 
-                    for (int n = 0; n < 8; n++) {
+                    for (int n = 0; n < 3; n++) {
 
-                        for (int i = 0; i < 4; i++) {
-                            for (int j = 255; j >= 0; j--) {
-                                Thread.sleep(3);
-                                mRectPaint.setAlpha(j);
-                                postInvalidate();
+                        changeAlpha(mRectPaint);
+
+                        int j = 0;
+
+                        for (int i = 0; i < mCoordinatesListPointA.size() + 5; i++) {
+
+                            if(i == 0 && i < 5){
+                                changeAlpha(mRectPaint);
                             }
-                            for (int k = 0; k < 255; k++) {
-                                Thread.sleep(3);
-                                mRectPaint.setAlpha(k);
-                                postInvalidate();
+
+                            if(i >= 5){
+
+                                j = i - 5;
+
+                                Thread.sleep(4);
+
+                                moveRectangle(mRightBottomSquare,
+                                        mCoordinatesListPointA.get(j).x,
+                                        mCoordinatesListPointA.get(j).y);
+
+                                moveRectangle(mLeftBottomSquare,
+                                        mCoordinatesListPointB.get(j).x,
+                                        mCoordinatesListPointB.get(j).y);
+
+                                moveRectangle(mLeftTopSquare,
+                                        mCoordinatesListPointC.get(j).x,
+                                        mCoordinatesListPointC.get(j).y);
+
+                                moveRectangle(mRightTopSquare,
+                                        mCoordinatesListPointD.get(j).x,
+                                        mCoordinatesListPointD.get(j).y);
+
+                                if(j == (15 * (mSideSquare - mSideSquare / 8) / 8 ) ){
+                                    changeAlpha(mPaint);
+                                    mPaint.setAlpha(255);
+                                }
                             }
-                            Thread.sleep(15);
-                        }
-                        Thread.sleep(15);
-                        for (int i = 255; i >= 0; i--) {
-                            Thread.sleep(3);
-                            mRectPaint.setAlpha(i);
+
                             postInvalidate();
                         }
-
-                        for (int i = 0; i < mCoordinatesListPointB.size(); i++) {
-
-                            Thread.sleep(4);
-
-                            moveRectangle(mRightBottomSquare,
-                                    mCoordinatesListPointA.get(i).x,
-                                    mCoordinatesListPointA.get(i).y);
-
-                            moveRectangle(mLeftBottomSquare,
-                                    mCoordinatesListPointB.get(i).x,
-                                    mCoordinatesListPointB.get(i).y);
-
-                            moveRectangle(mLeftTopSquare,
-                                    mCoordinatesListPointC.get(i).x,
-                                    mCoordinatesListPointC.get(i).y);
-
-                            moveRectangle(mRightTopSquare,
-                                    mCoordinatesListPointD.get(i).x,
-                                    mCoordinatesListPointD.get(i).y);
-
-                            postInvalidate();
-
-                        }
-
+                        mRectPaint.setAlpha(100);
+                        postInvalidate();
                     }
 
                 } catch (InterruptedException e) {
@@ -427,5 +271,25 @@ public class DyingLightProgressBar extends View {
                 }
             }
         }).start();
+    }
+
+    private void changeAlpha(Paint _paint) throws InterruptedException {
+//        for (int i = 0; i < 1; i++) {
+            for (int j = 255; j >= 0; j--) {
+                Thread.sleep(3);
+                _paint.setAlpha(j);
+                postInvalidate();
+            }
+            for (int k = 0; k < 255; k++) {
+                Thread.sleep(3);
+                _paint.setAlpha(k);
+                postInvalidate();
+            }
+//        }
+        for (int i = 255; i >= 0; i--) {
+            Thread.sleep(3);
+            _paint.setAlpha(i);
+            postInvalidate();
+        }
     }
 }
