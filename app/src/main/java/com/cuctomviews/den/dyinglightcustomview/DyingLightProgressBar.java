@@ -51,7 +51,7 @@ public class DyingLightProgressBar extends View {
         init();
     }
 
-    public void init(){
+    private void init(){
 
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mRectPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -127,7 +127,7 @@ public class DyingLightProgressBar extends View {
 
         drawSquares(canvas);
 
-        drawSixLines(canvas);
+        drawSidesAndDiagonals(canvas);
     }
 
     private void setPointsToSquares() {
@@ -180,29 +180,29 @@ public class DyingLightProgressBar extends View {
                 mLeftBottomSquare.centerY());
     }
 
-    private void drawSquares(Canvas canvas) {
-        canvas.drawRect(mLeftTopSquare, mPaint);
-        canvas.drawRect(mLeftBottomSquare, mPaint);
-        canvas.drawRect(mRightTopSquare, mPaint);
-        canvas.drawRect(mRightBottomSquare, mPaint);
+    private void drawSquares(Canvas _canvas) {
+        _canvas.drawRect(mLeftTopSquare, mPaint);
+        _canvas.drawRect(mLeftBottomSquare, mPaint);
+        _canvas.drawRect(mRightTopSquare, mPaint);
+        _canvas.drawRect(mRightBottomSquare, mPaint);
 
-        canvas.drawRect(mCentreSquare, mRectPaint);
+        _canvas.drawRect(mCentreSquare, mRectPaint);
     }
 
-    private void drawSixLines(Canvas canvas) {
-        myDrawLine(canvas, mLeftSide, mPaint);
-        myDrawLine(canvas, mTopSide, mPaint);
-        myDrawLine(canvas, mRightSide, mPaint);
-        myDrawLine(canvas, mBottomSide, mPaint);
-        myDrawLine(canvas, mFirstDiagonal, mPaint);
-        myDrawLine(canvas, mSecondDiagonal, mPaint);
+    private void drawSidesAndDiagonals(Canvas _canvas) {
+        myDrawLine(_canvas, mLeftSide, mPaint);
+        myDrawLine(_canvas, mTopSide, mPaint);
+        myDrawLine(_canvas, mRightSide, mPaint);
+        myDrawLine(_canvas, mBottomSide, mPaint);
+        myDrawLine(_canvas, mFirstDiagonal, mPaint);
+        myDrawLine(_canvas, mSecondDiagonal, mPaint);
     }
 
-    public void myDrawLine(Canvas canvas, Line _line, Paint paint){
-        canvas.drawLine(_line.startX, _line.startY, _line.endX, _line.endY, paint);
+    private void myDrawLine(Canvas _canvas, Line _line, Paint _paint){
+        _canvas.drawLine(_line.startX, _line.startY, _line.endX, _line.endY, _paint);
     }
 
-    public void moveRectangle(Rect _rect, int _centerX, int _centerY){
+    private void moveRectangle(Rect _rect, int _centerX, int _centerY){
 
         int halfSideSmallSquare = mSideSquare / 16;
 
@@ -224,7 +224,7 @@ public class DyingLightProgressBar extends View {
 
                         changeAlpha(mRectPaint);
 
-                        int j = 0;
+                        int j;
 
                         for (int i = 0; i < mCoordinatesListPointA.size() + 5; i++) {
 

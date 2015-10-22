@@ -1,13 +1,5 @@
 package com.cuctomviews.den.dyinglightcustomview;
 
-import android.animation.ObjectAnimator;
-import android.content.Context;
-import android.util.AttributeSet;
-import android.view.View;
-import android.view.animation.CycleInterpolator;
-import android.view.animation.LinearInterpolator;
-import android.view.animation.TranslateAnimation;
-
 /**
  * Created by Den on 20.10.15.
  */
